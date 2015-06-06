@@ -1,0 +1,9 @@
+{
+  "name": "gauge-chart",
+  "version": "0.0.1",
+  "description": "A D3-powered implementation of a gauge chart",
+  "author": "Grzegorz Hotala <grzegorz.hotala@gmail.com>",
+  "dependencies": {
+    "d3": "^3.5.5"
+  }
+}
