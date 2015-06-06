@@ -5,5 +5,12 @@
   "author": "Grzegorz Hotala <grzegorz.hotala@gmail.com>",
   "dependencies": {
     "d3": "^3.5.5"
+  },
+  "devDependencies": {
+    "jasmine-core": "^2.3.4",
+    "jasmine-node": "^1.14.5",
+    "karma": "^0.12.36",
+    "karma-chrome-launcher": "^0.1.12",
+    "karma-jasmine": "^0.3.5"
   }
 }
