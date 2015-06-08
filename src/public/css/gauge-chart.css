@@ -1,0 +1,25 @@
+svg.gh-gauge-chart {
+	width: 150px;
+	height: 150px;
+}
+
+svg.gh-gauge-chart g.gh-gauge-chart-main-layer {
+	transform: translate(75px, 75px) scale(0.8);;
+}
+
+ svg.gh-gauge-chart path.background {
+    fill: whitesmoke; }
+  svg.gh-gauge-chart path.series {
+    fill: navy; }
+    svg.gh-gauge-chart path.series.series-1 {
+      opacity: 0.75; }
+    svg.gh-gauge-chart path.series.series-2 {
+      opacity: 0.55; }
+    svg.gh-gauge-chart path.series.series-3 {
+      opacity: 0.35; }
+    svg.gh-gauge-chart path.series.series-4 {
+      opacity: 0.15; }
+    svg.gh-gauge-chart path.series:hover {
+      opacity: 1; }
+  svg.gh-gauge-chart .main-value {
+    font-size: 1.5em; }
