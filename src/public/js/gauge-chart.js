@@ -1,11 +1,12 @@
 function GaugeChart(options) {
+	'use strict';
 	
 	options = options || {};
 	
-	// TODO: replace with object merger
 	var _options = {
 		target: options.target || document.getElementsByTagName('body')[0],
 		data: options.data || [{id: 1, value: 10}, {id: 2, value: 20}, {id: 3, value: 50}],		
+		renderHalfCircle: options.renderHalfCircle || false,
 		seriesThickness: options.seriesThickness || 9,
 		seriesSeparation: options.seriesSeparation || 1,
 		startAngle: options.startAngle || 0,
@@ -20,8 +21,13 @@ function GaugeChart(options) {
 	};		
 
 	var getSeriesEndAngle = function(d) {
-		return _options.startAngle + Math.PI * 2 * d.value / 100;
-	};	
+		var angleMultiplier = _options.renderHalfCircle ? 0.5 : 1;
+		return (_options.startAngle + Math.PI * 2 * d.value / 100) * angleMultiplier;
+	};
+	
+	var getBackgroundEndAngle = function() {
+		return getSeriesEndAngle({value: 100});
+	};
 	
 	var _calculations = {};
 	var _frameElements = {};
@@ -37,61 +43,39 @@ function GaugeChart(options) {
 	};
 	
 	function calculateDimensions(container, _calculations) {
-		_calculations.outerSize = Math.min(container.clientWidth, container.clientHeight);
+		_calculations.outerSize = Math.max(container.clientWidth, container.clientHeight);
 		_calculations.outerRadius = _calculations.outerSize / 2;
 	};
 	
-	function renderBackground(data, layer) {
-		var backgroudArc = d3
-			.svg
-			.arc()
-			.innerRadius(getSeriesInnerRadius)
-			.outerRadius(getSeriesOuterRadius)
-			.startAngle(0)
-			.endAngle(Math.PI * 2);
-		
-		var bg = layer
-			.selectAll('path.background')
-			.data(data, function(d) { return d.id; });
+	function renderArcs(data, layer, arcTypes) {
+		for (var i = 0, length = arcTypes.length; i < length; i++) {		
+			var arcType = arcTypes[i];
+			
+			var arcFunction = d3
+				.svg
+				.arc()
+				.innerRadius(getSeriesInnerRadius)
+				.outerRadius(getSeriesOuterRadius)
+				.startAngle(_options.startAngle)
+				.endAngle(arcType === 'series' ? getSeriesEndAngle : getBackgroundEndAngle);
+				
+			var arcs = layer
+				.selectAll('path.' + arcType)
+				.data(data, function(d) { return d.id; });
 
-		bg
-			.exit()
-			.remove();
-			
-		bg
-			.enter()
-			.append('path');
-			
-		bg			
-			.attr('class', function(d, i) { return 'background background-' + (i + 1); })			
-			.attr('d', backgroudArc);			
+			arcs
+				.exit()
+				.remove();
+				
+			arcs
+				.enter()
+				.append('path');
+				
+			arcs			
+				.attr('class', function(d, i) { return arcType + ' ' + arcType + '-' + (i + 1); })			
+				.attr('d', arcFunction);		
+		}
 	};
-	
-	function renderSeries(data, layer) {
-		var seriesArc = d3
-			.svg
-			.arc()
-			.innerRadius(getSeriesInnerRadius)
-			.outerRadius(getSeriesOuterRadius)
-			.startAngle(_options.startAngle)
-			.endAngle(getSeriesEndAngle);
-		
-		var s = layer
-			.selectAll('path.series')
-			.data(data, function(d) { return d.id; });
-
-		s
-			.exit()
-			.remove();
-			
-		s
-			.enter()
-			.append('path');
-			
-		s			
-			.attr('class', function(d, i) { return 'series series-' + (i + 1); })			
-			.attr('d', seriesArc);			
-	};	
 	
 	function render() {
 		renderFrame(_options.target, _frameElements);
@@ -100,12 +84,12 @@ function GaugeChart(options) {
 	};
 	
 	function update() {
-		renderBackground(_options.data, _frameElements.$mainLayer);	
-		renderSeries(_options.data, _frameElements.$mainLayer);	
+		renderArcs(_options.data, _frameElements.$mainLayer, ['background', 'series']);
 	};
 	
+	render();
+	
 	return {
-		render: render,
 		update: update
 	};
 };
