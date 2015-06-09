@@ -2,17 +2,27 @@ function GaugeChart(options) {
 	'use strict';
 	
 	options = options || {};
-	
+	options.animation = options.animation || {};
+		
 	var _options = {
 		target: options.target || document.getElementsByTagName('body')[0],
 		data: options.data || [{id: 1, value: 10}, {id: 2, value: 20}, {id: 3, value: 50}],		
 		renderHalfCircle: options.renderHalfCircle || false,
 		seriesThickness: options.seriesThickness || 9,
 		seriesSeparation: options.seriesSeparation || 1,
-		startAngle: options.startAngle || 0,
+		startAngle: options.startAngle === 0 ? 0 : (options.startAngle || -Math.PI / 2),
+		animation: {
+			animate: options.animation.animate || false,
+			delay: options.animation.delay === 0 ? 0 : (options.animation.delay || 0),
+			duration: options.animation.duration === 0 ? 0 : (options.animation.duration || 2000)
+		},
 	};
 
-	var getDatumWeight = function(datum) {
+	function cloneObject(source) {
+		return JSON.parse(JSON.stringify(source));
+	};	
+	
+	function getDatumWeight(datum) {
 		var weight = datum.weight
 		return typeof(weight) === 'undefined' ? 1 : Math.max(weight, 0);		
 	};	
@@ -61,6 +71,7 @@ function GaugeChart(options) {
 	
 	var _calculations = {};
 	var _frameElements = {};
+	var _dataElements = {};
 	
 	function renderFrame(target, _frameElements) {
 		_frameElements.$svg = d3.select(target)
@@ -77,37 +88,44 @@ function GaugeChart(options) {
 		_calculations.outerRadius = _calculations.outerSize / 2;
 	};
 	
-	function renderArcs(data, layer, arcTypes) {
-		for (var i = 0, length = arcTypes.length; i < length; i++) {		
-			var arcType = arcTypes[i];
+	function getArcFunction(arcType) {
+		return (d3
+			.svg
+			.arc()
+			.innerRadius(getSeriesInnerRadius)
+			.outerRadius(getSeriesOuterRadius)
+			.startAngle(_options.startAngle)
+			.endAngle(arcType === 'series' ? getSeriesEndAngle : getBackgroundEndAngle));	
+	}
+	
+	function renderArcs(data, layer, arcType, renderFinalValue) {
+		var arcFunction = getArcFunction(arcType);
 			
-			var arcFunction = d3
-				.svg
-				.arc()
-				.innerRadius(getSeriesInnerRadius)
-				.outerRadius(getSeriesOuterRadius)
-				.startAngle(_options.startAngle)
-				.endAngle(arcType === 'series' ? getSeriesEndAngle : getBackgroundEndAngle);
-				
-			var arcs = layer
-				.selectAll('path.' + arcType)
-				.data(data, function(d) { return d.id; });
+		var arcs = layer
+			.selectAll('path.' + arcType)
+			.data(data, function(d) { return d.id; });
 
-			arcs
-				.exit()
-				.remove();
-				
-			arcs
-				.enter()
-				.append('path');
-				
-			arcs			
-				.attr('class', function(d, i) { return arcType + ' ' + arcType + '-' + (i + 1); })			
+		arcs
+			.exit()
+			.remove();
+			
+		arcs
+			.enter()
+			.append('path')
+			.attr('data-current-value', function(d) { return renderFinalValue ? d.value : 0; });			
+			
+		arcs			
+			.attr('class', function(d, i) { return arcType + ' ' + arcType + '-' + (i + 1); });
+			
+		if (renderFinalValue) {
+			arcs				
 				.attr('d', arcFunction);		
 		}
+		
+		return arcs;
 	};
 	
-	function renderValue(value, layer) {
+	function renderText(value, layer) {
 		var text = layer
 			.selectAll('text.main-value')
 			.data([0]);
@@ -115,21 +133,74 @@ function GaugeChart(options) {
 		text
 			.enter()
 			.append('text')
+			.attr('data-current-value', value)
 			.attr('class', 'main-value');
 		
 		text
 			.text(value.toFixed(1) + '%');		
+			
+		return text;
+	};
+	
+	function seriesArcTween(transition) {
+		transition.attrTween('d', function(d, i) {
+			var interpolate = d3.interpolate(this.getAttribute('data-current-value'), d.value);				
+			var arc = getArcFunction('series');
+			var that = this;
+			return function(t) {
+				var newValue = interpolate(t);
+				var dataClone = cloneObject(d);
+				dataClone.value = newValue;
+				that.setAttribute('data-current-value', newValue);
+				return arc(dataClone, i);
+			};
+		});
+	};	
+	
+	function valueTextTween(transition) {
+		var interpolate = d3.interpolate(this.getAttribute('data-current-value'), getWeightedAvg(_options.data));
+		var that = this;
+		return function(t) {
+			var newValue = interpolate(t);
+			that.setAttribute('data-current-value', newValue);
+			d3.select(this).text(newValue.toFixed(1) + '%');
+		}	
+	};
+	
+	function animateSeries($series, duration, delay, tween) {
+		$series
+			.transition()
+				.duration(duration)
+				.delay(delay)	
+				.call(tween);	
+	};
+	
+	function animateText($text, duration, delay, tween) {
+		$text
+			.transition()
+				.duration(duration)
+				.delay(delay)
+				.tween('text', tween);	
 	};
 	
 	function render() {
 		renderFrame(_options.target, _frameElements);
 		calculateDimensions(_frameElements.$svg[0][0], _calculations);
-		update();
+		update(true);
 	};
-	
-	function update() {
-		renderArcs(_options.data, _frameElements.$mainLayer, ['background', 'series']);
-		renderValue(getWeightedAvg(_options.data), _frameElements.$mainLayer);
+		
+	function update(renderInitialValues) {
+		_dataElements.$background = renderArcs(_options.data, _frameElements.$mainLayer, 'background', true);
+		if (_options.animation.animate) {
+			_dataElements.$series = renderArcs(_options.data, _frameElements.$mainLayer, 'series', false);
+			_dataElements.$text = renderText(renderInitialValues ? 0 : parseFloat(_dataElements.$text.attr('data-current-value')), _frameElements.$mainLayer);			
+			animateSeries(_dataElements.$series, _options.animation.duration, _options.animation.delay, seriesArcTween);
+			animateText(_dataElements.$text, _options.animation.duration, _options.animation.delay, valueTextTween);			
+		}
+		else {
+			_dataElements.$series = renderArcs(_options.data, _frameElements.$mainLayer, 'series', true);					
+			_dataElements.$text = renderText(getWeightedAvg(_options.data), _frameElements.$mainLayer);			
+		};	
 	};
 	
 	render();
