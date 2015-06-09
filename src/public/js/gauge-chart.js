@@ -12,20 +12,50 @@ function GaugeChart(options) {
 		startAngle: options.startAngle || 0,
 	};
 
-	var getSeriesOuterRadius = function(d, i) {
+	var getDatumWeight = function(datum) {
+		var weight = datum.weight
+		return typeof(weight) === 'undefined' ? 1 : Math.max(weight, 0);		
+	};	
+	
+	function getTotalWeight(data) {
+		var totalWeight = 0;
+		for (var i = 0, length = data.length; i < length; i++) {
+			totalWeight += getDatumWeight(data[i]);
+		}	
+
+		return totalWeight;
+	};
+	
+	function getWeightedAvg(data) {
+		var avg = 0,
+			totalWeight = getTotalWeight(data);
+			
+		if (totalWeight > 0) {
+			for (var i = 0, length = data.length; i < length; i++) {
+				var datum = data[i],
+					value = datum.value,
+					weight = getDatumWeight(datum);
+				avg += value * weight / totalWeight;
+			}	
+		}
+
+		return avg;		
+	};	
+	
+	function getSeriesOuterRadius(d, i) {
 		return _calculations.outerRadius - i * (_options.seriesThickness + _options.seriesSeparation);	
 	};
 	
-	var getSeriesInnerRadius = function(d, i) {
+	function getSeriesInnerRadius(d, i) {
 		return getSeriesOuterRadius(d, i) - _options.seriesThickness;
 	};		
 
-	var getSeriesEndAngle = function(d) {
+	function getSeriesEndAngle(d) {
 		var angleMultiplier = _options.renderHalfCircle ? 0.5 : 1;
-		return (_options.startAngle + Math.PI * 2 * d.value / 100) * angleMultiplier;
+		return Math.PI * 2 * d.value * angleMultiplier / 100 + _options.startAngle;
 	};
 	
-	var getBackgroundEndAngle = function() {
+	function getBackgroundEndAngle() {
 		return getSeriesEndAngle({value: 100});
 	};
 	
@@ -77,6 +107,20 @@ function GaugeChart(options) {
 		}
 	};
 	
+	function renderValue(value, layer) {
+		var text = layer
+			.selectAll('text.main-value')
+			.data([0]);
+		
+		text
+			.enter()
+			.append('text')
+			.attr('class', 'main-value');
+		
+		text
+			.text(value.toFixed(1) + '%');		
+	};
+	
 	function render() {
 		renderFrame(_options.target, _frameElements);
 		calculateDimensions(_frameElements.$svg[0][0], _calculations);
@@ -85,6 +129,7 @@ function GaugeChart(options) {
 	
 	function update() {
 		renderArcs(_options.data, _frameElements.$mainLayer, ['background', 'series']);
+		renderValue(getWeightedAvg(_options.data), _frameElements.$mainLayer);
 	};
 	
 	render();

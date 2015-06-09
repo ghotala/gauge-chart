@@ -55,6 +55,11 @@ describe('Gauge chart', function() {
 				expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.series.series-3')[0].length).toEqual(1);								
 			});		
 
+			it('should render text value', function() {
+				expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer text.main-value')[0].length).toEqual(1);								
+				expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer text.main-value').text()).toEqual('26.7%');								
+			});					
+			
 			it('update method should re-render with current dataset', function() {
 				options.data.pop();
 				chart.update();
@@ -66,6 +71,8 @@ describe('Gauge chart', function() {
 				expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.series.series-1')[0].length).toEqual(1);				
 				expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.series.series-2')[0].length).toEqual(1);				
 				expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.series.series-3')[0].length).toEqual(0);			
+				expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer text.main-value')[0].length).toEqual(1);								
+				expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer text.main-value').text()).toEqual('15.0%');												
 			});
 		});
 	});

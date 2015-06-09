@@ -21,5 +21,7 @@ svg.gh-gauge-chart g.gh-gauge-chart-main-layer {
       opacity: 0.15; }
     svg.gh-gauge-chart path.series:hover {
       opacity: 1; }
-  svg.gh-gauge-chart .main-value {
+  svg.gh-gauge-chart text.main-value {
+	text-anchor: middle;
+	transform: translate(0px, 0.35em);
     font-size: 1.5em; }
