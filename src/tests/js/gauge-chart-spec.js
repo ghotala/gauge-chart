@@ -123,6 +123,7 @@ describe('Gauge chart', function() {
 						options.data[0].value *= 2;
 						options.data[1].value *= 0.5;
 						options.data[2].value *= 1.33;
+						options.data.splice(1,1);
 						chart.update();
 						setTimeout(function() {
 							expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer text.main-value').text()).toEqual('32.2%');												

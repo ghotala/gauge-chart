@@ -13,7 +13,7 @@ function GaugeChart(options) {
 		startAngle: options.startAngle === 0 ? 0 : (options.startAngle || -Math.PI / 2),
 		animation: {
 			animate: options.animation.animate || false,
-			delay: options.animation.delay === 0 ? 0 : (options.animation.delay || 0),
+			delay: options.animation.delay || 0,
 			duration: options.animation.duration === 0 ? 0 : (options.animation.duration || 2000)
 		},
 	};
@@ -105,14 +105,26 @@ function GaugeChart(options) {
 			.selectAll('path.' + arcType)
 			.data(data, function(d) { return d.id; });
 
-		arcs
-			.exit()
-			.remove();
+		if (_options.animation.animate) {
+			arcs
+				.exit()
+				.transition()
+					.duration(2000)
+					.delay(0)
+					.style('opacity', 0)
+					.remove();
+		}
+		else {
+			arcs
+				.exit()
+				.remove();
+		}
 			
 		arcs
 			.enter()
 			.append('path')
-			.attr('data-current-value', function(d) { return renderFinalValue ? d.value : 0; });			
+			.attr('data-current-value', function(d) { return renderFinalValue ? d.value : 0; })	
+			.attr('data-current-index', function(d, i) { return renderFinalValue ? i : 0; });			
 			
 		arcs			
 			.attr('class', function(d, i) { return arcType + ' ' + arcType + '-' + (i + 1); });
@@ -133,7 +145,7 @@ function GaugeChart(options) {
 		text
 			.enter()
 			.append('text')
-			.attr('data-current-value', value)
+			.attr('data-current-value', value)			
 			.attr('class', 'main-value');
 		
 		text
@@ -144,15 +156,18 @@ function GaugeChart(options) {
 	
 	function seriesArcTween(transition) {
 		transition.attrTween('d', function(d, i) {
-			var interpolate = d3.interpolate(this.getAttribute('data-current-value'), d.value);				
+			var interpolateValue = d3.interpolate(this.getAttribute('data-current-value'), d.value);				
+			var interpolateIndex = d3.interpolate(this.getAttribute('data-current-index'), i);				
 			var arc = getArcFunction('series');
 			var that = this;
 			return function(t) {
-				var newValue = interpolate(t);
+				var newValue = interpolateValue(t);
+				var newIndex = interpolateIndex(t);
 				var dataClone = cloneObject(d);
 				dataClone.value = newValue;
 				that.setAttribute('data-current-value', newValue);
-				return arc(dataClone, i);
+				that.setAttribute('data-current-index', newIndex);
+				return arc(dataClone, newIndex);
 			};
 		});
 	};	
