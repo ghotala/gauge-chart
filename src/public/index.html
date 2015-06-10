@@ -8,8 +8,30 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="stylesheet" href="css/gauge-chart.css">
+		<style>
+			#red svg.gh-gauge-chart path.background {
+			fill: #C2B280; }
+			#red svg.gh-gauge-chart path.series {
+			fill: red; }
+			
+#big svg.gh-gauge-chart {
+	width: 300px;
+	height: 300px;
+}
+
+#big svg.gh-gauge-chart g.gh-gauge-chart-main-layer {
+	transform: translate(150px, 150px) scale(0.8);;
+}
+
+ #big svg.gh-gauge-chart text.main-value {
+	fill: red;
+    font-size: 2em; }			
+		</style>
     </head>
     <body>
+		<div id="regular"></div>
+		<div id="red"></div>
+		<div id="big"></div>
 		<script src="../../node_modules/d3/d3.js"></script>
         <script src="js/gauge-chart.js"></script>
 		<script>
@@ -35,18 +57,50 @@
 		}
 		
 		var options = {
-			target: d3.select('body')[0][0],
+			target: d3.select('#regular')[0][0],
 			data: generateData([2,4], [10, 90], [1,5]),//[{id: 1, value: 10}, {id: 2, value: 20}, {id: 3, value: 50}],
 			animation: {
 					animate: true
 			},
 		};
 
-		var chart = GaugeChart(options);
+		var chartFull = GaugeChart(options);
+		options.renderHalfCircle = true;
+		var chartHalf = GaugeChart(options);
+		options.startAngle = Math.PI / 4;
+		var chartHalfHalfOne = GaugeChart(options);		
+		
+		options.target = d3.select('#red')[0][0];
+		var chartHalfHalfOneRed = GaugeChart(options);		
+
+		delete options.startAngle;
+		delete options.renderHalfCircle;
+		options.target = d3.select('#big')[0][0];
+		var chartBig = GaugeChart(options);		
+		
+		options.renderHalfCircle = true;
+		options.startAngle = Math.PI / 2;
+		options.seriesThickness = 25;
+		options.seriesSeparation = 10;
+		var chartBigThick = GaugeChart(options);		
 		
 		setInterval(function() {
-			chart.data(generateData([2,4], [10, 90], [1,5]));
-			chart.update();
+			var data = generateData([2,4], [10, 90], [1,5]);
+			chartFull.data(data);
+			chartFull.update();
+			chartHalf.data(data);
+			chartHalf.update();				
+			chartHalfHalfOne.data(data);
+			chartHalfHalfOne.update();			
+			
+			chartHalfHalfOneRed.data(data);
+			chartHalfHalfOneRed.update();						
+
+			chartBig.data(data);
+			chartBig.update();	
+			
+			chartBigThick.data(data);
+			chartBigThick.update();				
 		}, 2500);
 		</script>
     </body>
