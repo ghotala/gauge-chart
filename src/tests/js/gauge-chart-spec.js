@@ -19,7 +19,24 @@ describe('Gauge chart', function() {
 			it('should have update function', function() {
 				expect(typeof(chart.update)).toBe('function');
 			});			
+			it('should have data function', function() {
+				expect(typeof(chart.data)).toBe('function');
+			});						
 		});		
+		
+		describe('data function', function() {
+			var chart;
+			beforeEach(function() {
+				d3.selectAll('svg.gh-gauge-chart').remove();				
+				chart = GaugeChart();
+			});
+			
+			it('should set and return dataset', function() {
+				expect(chart.data()).toEqual([{id: 1, value: 10}, {id: 2, value: 20}, {id: 3, value: 50}]);
+				chart.data([{id: 5, value: 55}]);
+				expect(chart.data()).toEqual([{id: 5, value: 55}]);
+			});
+		});
 		
 		describe('with a proper target', function() {			
 			var chart;
@@ -97,8 +114,7 @@ describe('Gauge chart', function() {
 			describe('with animations on', function() {
 				beforeEach(function() {
 					options.animation = {
-						animate: true,
-						onEnd: null
+						animate: true
 					};							
 				});	
 
