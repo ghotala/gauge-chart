@@ -126,7 +126,7 @@ describe('Gauge chart', function() {
 						options.data.splice(1,1);
 						chart.update();
 						setTimeout(function() {
-							expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer text.main-value').text()).toEqual('32.2%');												
+							expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer text.main-value').text()).toEqual('43.3%');												
 							done(); 
 						}, 2100);
 					}, 2100);

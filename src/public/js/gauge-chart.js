@@ -86,6 +86,7 @@ function GaugeChart(options) {
 	function calculateDimensions(container, _calculations) {
 		_calculations.outerSize = Math.max(container.clientWidth, container.clientHeight);
 		_calculations.outerRadius = _calculations.outerSize / 2;
+		_calculations.seriesToFit = Math.ceil(_calculations.outerRadius / (_options.seriesThickness + _options.seriesSeparation));
 	};
 	
 	function getArcFunction(arcType) {
@@ -98,7 +99,7 @@ function GaugeChart(options) {
 			.endAngle(arcType === 'series' ? getSeriesEndAngle : getBackgroundEndAngle));	
 	}
 	
-	function renderArcs(data, layer, arcType, renderFinalValue) {
+	function renderArcs(data, layer, arcType, renderFinalValue, renderFinalPosition) {
 		var arcFunction = getArcFunction(arcType);
 			
 		var arcs = layer
@@ -124,12 +125,12 @@ function GaugeChart(options) {
 			.enter()
 			.append('path')
 			.attr('data-current-value', function(d) { return renderFinalValue ? d.value : 0; })	
-			.attr('data-current-index', function(d, i) { return renderFinalValue ? i : 0; });			
+			.attr('data-current-index', function(d, i) { return renderFinalPosition ? i : _calculations.seriesToFit; });			
 			
 		arcs			
 			.attr('class', function(d, i) { return arcType + ' ' + arcType + '-' + (i + 1); });
 			
-		if (renderFinalValue) {
+		if (renderFinalValue && renderFinalPosition) {
 			arcs				
 				.attr('d', arcFunction);		
 		}
@@ -154,22 +155,24 @@ function GaugeChart(options) {
 		return text;
 	};
 	
-	function seriesArcTween(transition) {
-		transition.attrTween('d', function(d, i) {
-			var interpolateValue = d3.interpolate(this.getAttribute('data-current-value'), d.value);				
-			var interpolateIndex = d3.interpolate(this.getAttribute('data-current-index'), i);				
-			var arc = getArcFunction('series');
-			var that = this;
-			return function(t) {
-				var newValue = interpolateValue(t);
-				var newIndex = interpolateIndex(t);
-				var dataClone = cloneObject(d);
-				dataClone.value = newValue;
-				that.setAttribute('data-current-value', newValue);
-				that.setAttribute('data-current-index', newIndex);
-				return arc(dataClone, newIndex);
-			};
-		});
+	function arcTween(arcType) {
+		return function(transition) {		
+			transition.attrTween('d', function(d, i) {
+				var interpolateValue = d3.interpolate(this.getAttribute('data-current-value'), d.value);				
+				var interpolateIndex = d3.interpolate(this.getAttribute('data-current-index'), i);				
+				var arc = getArcFunction(arcType);
+				var that = this;
+				return function(t) {
+					var newValue = interpolateValue(t);
+					var newIndex = interpolateIndex(t);
+					var dataClone = cloneObject(d);
+					dataClone.value = newValue;
+					that.setAttribute('data-current-value', newValue);
+					that.setAttribute('data-current-index', newIndex);
+					return arc(dataClone, newIndex);
+				};
+			});
+		};
 	};	
 	
 	function valueTextTween(transition) {
@@ -205,15 +208,17 @@ function GaugeChart(options) {
 	};
 		
 	function update(renderInitialValues) {
-		_dataElements.$background = renderArcs(_options.data, _frameElements.$mainLayer, 'background', true);
 		if (_options.animation.animate) {
-			_dataElements.$series = renderArcs(_options.data, _frameElements.$mainLayer, 'series', false);
+			_dataElements.$background = renderArcs(_options.data, _frameElements.$mainLayer, 'background', true, false);		
+			_dataElements.$series = renderArcs(_options.data, _frameElements.$mainLayer, 'series', false, false);
 			_dataElements.$text = renderText(renderInitialValues ? 0 : parseFloat(_dataElements.$text.attr('data-current-value')), _frameElements.$mainLayer);			
-			animateSeries(_dataElements.$series, _options.animation.duration, _options.animation.delay, seriesArcTween);
+			animateSeries(_dataElements.$background, _options.animation.duration, _options.animation.delay, arcTween('background'));
+			animateSeries(_dataElements.$series, _options.animation.duration, _options.animation.delay, arcTween('series'));
 			animateText(_dataElements.$text, _options.animation.duration, _options.animation.delay, valueTextTween);			
 		}
 		else {
-			_dataElements.$series = renderArcs(_options.data, _frameElements.$mainLayer, 'series', true);					
+			_dataElements.$background = renderArcs(_options.data, _frameElements.$mainLayer, 'background', true, true);
+			_dataElements.$series = renderArcs(_options.data, _frameElements.$mainLayer, 'series', true, true);					
 			_dataElements.$text = renderText(getWeightedAvg(_options.data), _frameElements.$mainLayer);			
 		};	
 	};
