@@ -10,7 +10,7 @@ function GaugeChart(options) {
 		renderHalfCircle: options.renderHalfCircle || false,
 		seriesThickness: options.seriesThickness || 9,
 		seriesSeparation: options.seriesSeparation || 1,
-		startAngle: options.startAngle === 0 ? 0 : (options.startAngle || -Math.PI / 2),
+		startAngle: -Math.PI / 2,
 		animation: {
 			animate: options.animation.animate || false,
 			delay: options.animation.delay || 0,
@@ -98,6 +98,14 @@ function GaugeChart(options) {
 		_frameElements.$mainLayer = _frameElements.$svg
 			.append('g')
 			.attr('class', 'gh-gauge-chart-main-layer');			
+			
+		_frameElements.$seriesLayer = _frameElements.$mainLayer
+			.append('g')
+			.attr('class', 'gh-gauge-chart-series-layer');
+			
+		_frameElements.$textLayer = _frameElements.$mainLayer
+			.append('g')
+			.attr('class', 'gh-gauge-chart-text-layer');			
 	};
 	
 	function calculateDimensions() {
@@ -119,7 +127,7 @@ function GaugeChart(options) {
 	
 	function renderArcs(arcType, renderFinalValue, renderFinalPosition) {
 		var data = _options.data
-		var layer = _frameElements.$mainLayer;
+		var layer = _frameElements.$seriesLayer;
 		var arcFunction = getArcFunction(arcType);
 			
 		var arcs = layer
@@ -153,7 +161,7 @@ function GaugeChart(options) {
 	};
 	
 	function renderText(value) {
-		var layer =  _frameElements.$mainLayer;
+		var layer =  _frameElements.$textLayer;
 		var text = layer
 			.selectAll('text.main-value')
 			.data([0]);
@@ -167,7 +175,6 @@ function GaugeChart(options) {
 		text
 			.text(value.toFixed(1) + '%');		
 		
-		text[0][0].parentNode.appendChild(text[0][0]);
 		return text;
 	};
 	
@@ -246,7 +253,7 @@ function GaugeChart(options) {
 		else {
 			_dataElements.$background = renderArcs('background', true, true);
 			_dataElements.$series = renderArcs('series', true, true);					
-			_dataElements.$text = renderText(getWeightedAvg(_options.data), _frameElements.$mainLayer);			
+			_dataElements.$text = renderText(getWeightedAvg(_options.data));			
 		};	
 	};
 	

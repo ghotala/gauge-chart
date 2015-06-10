@@ -9,6 +9,9 @@
 
         <link rel="stylesheet" href="css/gauge-chart.css">
 		<style>
+			#red svg.gh-gauge-chart g.gh-gauge-chart-main-layer {
+			transform: translate(75px, 75px) scale(0.8) rotate(45deg); }
+			
 			#red svg.gh-gauge-chart path.background {
 			fill: #C2B280; }
 			#red svg.gh-gauge-chart path.series {
@@ -20,8 +23,11 @@
 }
 
 #big svg.gh-gauge-chart g.gh-gauge-chart-main-layer {
-	transform: translate(150px, 150px) scale(0.8);;
+	transform: translate(150px, 150px) scale(0.8);
 }
+
+#big svg.gh-gauge-chart g.gh-gauge-chart-series-layer {
+transform: rotate(135deg); }
 
  #big svg.gh-gauge-chart text.main-value {
 	fill: red;
@@ -67,19 +73,15 @@
 		var chartFull = GaugeChart(options);
 		options.renderHalfCircle = true;
 		var chartHalf = GaugeChart(options);
-		options.startAngle = Math.PI / 4;
-		var chartHalfHalfOne = GaugeChart(options);		
 		
 		options.target = d3.select('#red')[0][0];
-		var chartHalfHalfOneRed = GaugeChart(options);		
+		var chartHalfRed = GaugeChart(options);		
 
-		delete options.startAngle;
 		delete options.renderHalfCircle;
 		options.target = d3.select('#big')[0][0];
 		var chartBig = GaugeChart(options);		
 		
 		options.renderHalfCircle = true;
-		options.startAngle = Math.PI / 2;
 		options.seriesThickness = 25;
 		options.seriesSeparation = 10;
 		var chartBigThick = GaugeChart(options);		
@@ -90,11 +92,9 @@
 			chartFull.update();
 			chartHalf.data(data);
 			chartHalf.update();				
-			chartHalfHalfOne.data(data);
-			chartHalfHalfOne.update();			
 			
-			chartHalfHalfOneRed.data(data);
-			chartHalfHalfOneRed.update();						
+			chartHalfRed.data(data);
+			chartHalfRed.update();						
 
 			chartBig.data(data);
 			chartBig.update();	
