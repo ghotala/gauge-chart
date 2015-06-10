@@ -99,6 +99,10 @@ function GaugeChart(options) {
 			.append('g')
 			.attr('class', 'gh-gauge-chart-main-layer');			
 			
+		_frameElements.$mainLayerOverlay = _frameElements.$mainLayer
+			.append('rect')
+			.attr('class', 'gh-gauge-chart-overlay gh-gauge-chart-main-layer-overlay');						
+			
 		_frameElements.$seriesLayer = _frameElements.$mainLayer
 			.append('g')
 			.attr('class', 'gh-gauge-chart-series-layer');

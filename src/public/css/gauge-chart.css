@@ -4,7 +4,7 @@ svg.gh-gauge-chart {
 }
 
 svg.gh-gauge-chart g.gh-gauge-chart-main-layer {
-	transform: translate(75px, 75px) scale(0.8);;
+	transform: translate(75px, 75px) scale(0.8);
 }
 
  svg.gh-gauge-chart path.background {
