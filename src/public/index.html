@@ -70,45 +70,58 @@ transform: rotate(135deg); }
 			return data;
 		}
 		
-		var options = {
-			target: d3.select('#regular')[0][0],
-			data: generateData([2,4], [10, 90], [1,5]),//[{id: 1, value: 10}, {id: 2, value: 20}, {id: 3, value: 50}],
-			animation: {
-					animate: true
-			},
-		};
+		var data = generateData([2,4], [10, 90], [1,5]);
 
-		var chartFull = GaugeChart(options);
-		options.renderHalfCircle = true;
-		var chartHalf = GaugeChart(options);
-		
-		options.target = d3.select('#red')[0][0];
-		var chartHalfRed = GaugeChart(options);		
+		var chartFull = GaugeChart()
+			.target(document.getElementById('regular'))
+			.data(data)
+			.animate(true);
+		chartFull.render();
 
-		delete options.renderHalfCircle;
-		options.target = d3.select('#big')[0][0];
-		var chartBig = GaugeChart(options);		
+		var chartHalf = GaugeChart()
+			.target(document.getElementById('regular'))
+			.data(data)
+			.animate(true)
+			.renderHalfCircle(true);
+		chartHalf.render();
 		
-		options.renderHalfCircle = true;
-		options.seriesThickness = 25;
-		options.seriesSeparation = 10;
-		var chartBigThick = GaugeChart(options);		
+		var chartHalfRed = GaugeChart()
+			.target(document.getElementById('red'))
+			.data(data)
+			.animate(true)
+			.renderHalfCircle(true);
+		chartHalfRed.render();
+			
+		var chartBig = GaugeChart()
+			.target(document.getElementById('big'))
+			.data(data)
+			.animate(true);
+		chartBig.render();
+		
+		var chartBigThick = GaugeChart()
+			.target(document.getElementById('big'))
+			.data(data)
+			.renderHalfCircle(true)
+			.seriesThickness(25)
+			.seriesSeparation(10)
+			.animate(true);
+		chartBigThick.render();
 		
 		setInterval(function() {
 			var data = generateData([2,4], [10, 90], [1,5]);
 			chartFull.data(data);
-			chartFull.update();
+			chartFull.render();
 			chartHalf.data(data);
-			chartHalf.update();				
+			chartHalf.render();				
 			
 			chartHalfRed.data(data);
-			chartHalfRed.update();						
+			chartHalfRed.render();						
 
 			chartBig.data(data);
-			chartBig.update();	
+			chartBig.render();	
 			
 			chartBigThick.data(data);
-			chartBigThick.update();				
+			chartBigThick.render();
 		}, 2500);
 		</script>
     </body>
