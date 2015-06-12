@@ -243,7 +243,7 @@ function GaugeChart(target) {
 		var container = _frameElements.$svg[0][0];
 		_calculations.outerSize = Math.max(container.clientWidth, container.clientHeight);
 		_calculations.outerRadius = _calculations.outerSize / 2;
-		_calculations.seriesToFit = Math.floor(_calculations.outerRadius / (_options.seriesThickness + _options.seriesSeparation));
+		_calculations.seriesToFit = Math.ceil(_calculations.outerRadius / (_options.seriesThickness + _options.seriesSeparation));
 	};
 	
 	function renderArcs(arcType, renderFinalValue, renderFinalPosition) {
