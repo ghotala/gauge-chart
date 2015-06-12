@@ -27,7 +27,7 @@ $chartSize: 150px;
 		}		
 	}
 	
-	-main-value {
+	&-main-value {
 		text-anchor: middle;
 		transform: translate(0px, 0.35em);
 		font-size: 1.5em; 

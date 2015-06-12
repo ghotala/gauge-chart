@@ -17,7 +17,7 @@
     opacity: 0.35; }
   .gh-gauge-chart-series-4 {
     opacity: 0.15; }
-  .gh-gauge-chart -main-value {
+  .gh-gauge-chart-main-value {
     text-anchor: middle;
     transform: translate(0px, 0.35em);
     font-size: 1.5em; }
