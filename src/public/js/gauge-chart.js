@@ -325,6 +325,7 @@ function GaugeChart(target) {
 		calculateDimensions();
 		update();
 		isRendered = true;
+		return self;
 	};
 		
 	function update() {
