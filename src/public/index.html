@@ -66,40 +66,34 @@ transform: rotate(135deg); }
 					id: uniqueId
 				})
 			}
-			console.log(data);
 			return data;
 		}
 		
 		var data = generateData([2,4], [10, 90], [1,5]);
 
-		var chartFull = GaugeChart()
-			.target(document.getElementById('regular'))
+		var chartFull = GaugeChart(document.getElementById('regular'))
 			.data(data)
 			.animate(true);
 		chartFull.render();
 
-		var chartHalf = GaugeChart()
-			.target(document.getElementById('regular'))
+		var chartHalf = GaugeChart(document.getElementById('regular'))
 			.data(data)
 			.animate(true)
 			.renderHalfCircle(true);
 		chartHalf.render();
 		
-		var chartHalfRed = GaugeChart()
-			.target(document.getElementById('red'))
+		var chartHalfRed = GaugeChart(document.getElementById('red'))
 			.data(data)
 			.animate(true)
 			.renderHalfCircle(true);
 		chartHalfRed.render();
 			
-		var chartBig = GaugeChart()
-			.target(document.getElementById('big'))
+		var chartBig = GaugeChart(document.getElementById('big'))
 			.data(data)
 			.animate(true);
 		chartBig.render();
 		
-		var chartBigThick = GaugeChart()
-			.target(document.getElementById('big'))
+		var chartBigThick = GaugeChart(document.getElementById('big'))
 			.data(data)
 			.renderHalfCircle(true)
 			.seriesThickness(25)
