@@ -252,7 +252,7 @@ function GaugeChart(target) {
 		var arcFunction = getArcFunction(arcType);
 			
 		var arcs = layer
-			.selectAll('path.' + arcType)
+			.selectAll('path.gh-gauge-chart-' + arcType)
 			.data(data, function(d) { return d.id; });
 
 		if (_options.animate) {
@@ -271,7 +271,7 @@ function GaugeChart(target) {
 			.attr('data-current-index', function(d, i) { return renderFinalPosition ? i : _calculations.seriesToFit; });			
 			
 		arcs			
-			.attr('class', function(d, i) { return arcType + ' ' + arcType + '-' + (i + 1); });
+			.attr('class', function(d, i) { return 'gh-gauge-chart-' + arcType + ' ' + 'gh-gauge-chart-' + arcType + '-' + (i + 1); });
 			
 		if (renderFinalValue && renderFinalPosition) {
 			arcs				
@@ -284,14 +284,14 @@ function GaugeChart(target) {
 	function renderText(value) {
 		var layer =  _frameElements.$textLayer;
 		var text = layer
-			.selectAll('text.main-value')
+			.selectAll('text.gh-gauge-chart-main-value')
 			.data([0]);
 		
 		text
 			.enter()
 			.append('text')
 			.attr('data-current-value', value)			
-			.attr('class', 'main-value');
+			.attr('class', 'gh-gauge-chart-main-value');
 		
 		text
 			.text(value.toFixed(1) + '%');		

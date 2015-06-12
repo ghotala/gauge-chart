@@ -1,0 +1,35 @@
+$seriesOpacities: 0.75 0.55 0.35 0.15;
+$chartSize: 150px;
+
+.gh-gauge-chart {
+	width: $chartSize;
+	height: $chartSize;
+
+	&-main-layer {
+		transform: translate($chartSize / 2, $chartSize / 2) scale(0.8);
+	}	
+	
+	&-background {
+		fill: whitesmoke; 
+	}	
+	
+	&-series {
+		fill: navy; 				
+		
+		&:hover {
+			opacity: 1;
+		}		
+	}	
+	@each $opacity in $seriesOpacities {
+		$i: index($seriesOpacities, $opacity);
+		&-series-#{$i} {
+			opacity: $opacity; 
+		}		
+	}
+	
+	-main-value {
+		text-anchor: middle;
+		transform: translate(0px, 0.35em);
+		font-size: 1.5em; 
+	}	
+}
