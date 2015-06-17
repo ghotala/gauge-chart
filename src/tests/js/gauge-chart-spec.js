@@ -90,35 +90,35 @@ describe('Gauge chart', function() {
 				it('should render frame elements', function() {								
 					expect(d3.selectAll('svg.gh-gauge-chart')[0].length).toEqual(1);
 					expect(d3.selectAll('svg.gh-gauge-chart')[0][0]).not.toBeNull();
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer')[0].length).toEqual(1);
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer')[0][0]).not.toBeNull();				
+					expect(d3.selectAll('g.gh-gauge-chart-main-layer')[0].length).toEqual(1);
+					expect(d3.selectAll('g.gh-gauge-chart-main-layer')[0][0]).not.toBeNull();				
 				});
 				
 				it('should render background arcs', function() {
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.background')[0].length).toEqual(3);				
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.background.background-1')[0].length).toEqual(1);				
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.background.background-2')[0].length).toEqual(1);				
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.background.background-3')[0].length).toEqual(1);								
+					expect(d3.selectAll('path.gh-gauge-chart-background')[0].length).toEqual(3);				
+					expect(d3.selectAll('path.gh-gauge-chart-background-1')[0].length).toEqual(1);				
+					expect(d3.selectAll('path.gh-gauge-chart-background-2')[0].length).toEqual(1);				
+					expect(d3.selectAll('path.gh-gauge-chart-background-3')[0].length).toEqual(1);								
 				});
 				
-				it('should render series arcs', function() {
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.series')[0].length).toEqual(3);				
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.series.series-1')[0].length).toEqual(1);				
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.series.series-2')[0].length).toEqual(1);				
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.series.series-3')[0].length).toEqual(1);								
+				it('should render series arcs', function() {	
+					expect(d3.selectAll('path.gh-gauge-chart-series')[0].length).toEqual(3);				
+					expect(d3.selectAll('path.gh-gauge-chart-series-1')[0].length).toEqual(1);				
+					expect(d3.selectAll('path.gh-gauge-chart-series-2')[0].length).toEqual(1);				
+					expect(d3.selectAll('path.gh-gauge-chart-series-3')[0].length).toEqual(1);							
 				});						
 				
 				it('should re-render arcs with current dataset', function() {
 					chart.data([{id: 1, value: 10}, {id: 2, value: 20}])
 					chart.render();
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.background')[0].length).toEqual(2);				
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.background.background-1')[0].length).toEqual(1);				
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.background.background-2')[0].length).toEqual(1);				
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.background.background-3')[0].length).toEqual(0);
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.series')[0].length).toEqual(2);	
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.series.series-1')[0].length).toEqual(1);				
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.series.series-2')[0].length).toEqual(1);				
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer path.series.series-3')[0].length).toEqual(0);			
+					expect(d3.selectAll('path.gh-gauge-chart-background')[0].length).toEqual(2);				
+					expect(d3.selectAll('path.gh-gauge-chart-background-1')[0].length).toEqual(1);				
+					expect(d3.selectAll('path.gh-gauge-chart-background-2')[0].length).toEqual(1);				
+					expect(d3.selectAll('path.gh-gauge-chart-background-3')[0].length).toEqual(0);		
+					expect(d3.selectAll('path.gh-gauge-chart-series')[0].length).toEqual(2);				
+					expect(d3.selectAll('path.gh-gauge-chart-series-1')[0].length).toEqual(1);				
+					expect(d3.selectAll('path.gh-gauge-chart-series-2')[0].length).toEqual(1);				
+					expect(d3.selectAll('path.gh-gauge-chart-series-3')[0].length).toEqual(0);	
 				});					
 			});
 							
@@ -130,15 +130,15 @@ describe('Gauge chart', function() {
 				});	
 						
 				it('should render text value', function() {
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer text.main-value')[0].length).toEqual(1);								
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer text.main-value').text()).toEqual('26.7%');								
+					expect(d3.selectAll('text.gh-gauge-chart-main-value')[0].length).toEqual(1);								
+					expect(d3.selectAll('text.gh-gauge-chart-main-value').text()).toEqual('26.7%');								
 				});					
 				
 				it('should re-render text value with current dataset', function() {
 					chart.data([{id: 1, value: 10}, {id: 2, value: 20}])
 					chart.render();
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer text.main-value')[0].length).toEqual(1);								
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer text.main-value').text()).toEqual('15.0%');
+					expect(d3.selectAll('text.gh-gauge-chart-main-value')[0].length).toEqual(1);								
+					expect(d3.selectAll('text.gh-gauge-chart-main-value').text()).toEqual('15.0%');													
 				});								
 			});				
 			
@@ -149,14 +149,13 @@ describe('Gauge chart', function() {
 
 				it('should render 0 as initial value', function(done) {
 					chart.render();	
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer text.main-value')[0].length).toEqual(1);								
-					expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer text.main-value').text()).toEqual('0.0%');	
+					expect(d3.selectAll('text.gh-gauge-chart-main-value').text()).toEqual('0.0%');							
 					setTimeout(done, 2100);
 				});					
 				
 				it('should render target value at the end of animation', function(done) {						
 					setTimeout(function() { 
-						expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer text.main-value').text()).toEqual('26.7%');												
+						expect(d3.selectAll('text.gh-gauge-chart-main-value').text()).toEqual('26.7%');		
 						done(); 
 					}, 2100);
 					chart.render();										
@@ -167,7 +166,7 @@ describe('Gauge chart', function() {
 						chart.data([{id: 1, value: 20}, {id: 3, value: 65}, {id: 4, value: 35}]);
 						chart.render();	
 						setTimeout(function() {
-							expect(d3.selectAll('svg.gh-gauge-chart g.gh-gauge-chart-main-layer text.main-value').text()).toEqual('40.0%');												
+							expect(d3.selectAll('text.gh-gauge-chart-main-value').text()).toEqual('40.0%');		
 							done(); 
 						}, 2100);
 					}, 2100);
