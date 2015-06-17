@@ -208,39 +208,47 @@ function GaugeChart(target) {
 	var _frameElements = {};
 	var _dataElements = {};
 	
-	function renderFrame() {
-		var target = _options.target;
-		
-		if (!isRendered) {
-			// Chart container
-			_frameElements.$svg = d3.select(target)
-				.append('svg')
-				.attr('class', 'gh-gauge-chart');	
-				
-			// Main layer
-			_frameElements.$mainLayer = _frameElements.$svg
-				.append('g')
-				.attr('class', 'gh-gauge-chart-main-layer');				
+	function renderFrame(target) {			
+		// Chart container
+		_frameElements.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+		_frameElements.svg
+			.setAttribute('class', 'gh-gauge-chart');
+		target
+			.appendChild(_frameElements.svg);
+			
+		// Main layer
+		_frameElements.mainLayer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+		_frameElements.mainLayer
+			.setAttribute('class', 'gh-gauge-chart-main-layer');
+		_frameElements.svg
+			.appendChild(_frameElements.mainLayer);
 
-			// Main layer overlay
-			_frameElements.$mainLayerOverlay = _frameElements.$mainLayer
-				.append('rect')
-				.attr('class', 'gh-gauge-chart-overlay gh-gauge-chart-main-layer-overlay');																			
-				
-			// Series layer
-			_frameElements.$seriesLayer = _frameElements.$mainLayer
-				.append('g')
-				.attr('class', 'gh-gauge-chart-series-layer');							
+		// Main layer overlay
+		_frameElements.mainLayerOverlay = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+		_frameElements.mainLayerOverlay
+			.setAttribute('class', 'gh-gauge-chart-overlay gh-gauge-chart-main-layer-overlay');
+		_frameElements.mainLayer
+			.appendChild(_frameElements.mainLayerOverlay);
+			
+		// Series layer
+		_frameElements.seriesLayer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+		_frameElements.seriesLayer
+			.setAttribute('class', 'gh-gauge-chart-series-layer');
+		_frameElements.mainLayer
+			.appendChild(_frameElements.seriesLayer);				
+		_frameElements.$seriesLayer	= d3.select(_frameElements.seriesLayer);
 
-			// Text layer
-			_frameElements.$textLayer = _frameElements.$mainLayer
-				.append('g')
-				.attr('class', 'gh-gauge-chart-text-layer');								
-		}
+		// Text layer
+		_frameElements.textLayer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+		_frameElements.textLayer
+			.setAttribute('class', 'gh-gauge-chart-text-layer');			
+		_frameElements.mainLayer
+			.appendChild(_frameElements.textLayer);							
+		_frameElements.$textLayer = d3.select(_frameElements.textLayer);		
 	};
 	
 	function calculateDimensions() {
-		var container = _frameElements.$svg[0][0];
+		var container = _frameElements.svg;		
 		_calculations.outerSize = Math.max(container.clientWidth, container.clientHeight);
 		_calculations.outerRadius = _calculations.outerSize / 2;
 		_calculations.seriesToFit = Math.ceil(_calculations.outerRadius / (_options.seriesThickness + _options.seriesSeparation));
@@ -320,9 +328,14 @@ function GaugeChart(target) {
 				.tween('text', tween);	
 	};
 	
-	function render() {
-		renderFrame();
-		calculateDimensions();
+	function render() {	
+		if (!isRendered) {	
+			var frag = document.createDocumentFragment();
+			renderFrame(frag);
+			_options.target
+				.appendChild(frag);
+			calculateDimensions();
+		}
 		update();
 		isRendered = true;
 		return self;
