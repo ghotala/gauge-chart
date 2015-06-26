@@ -12,7 +12,7 @@
     transform: translate(150px, 150px) scale(0.8); }
   #big .gh-gauge-chart-series-layer {
     transform: rotate(135deg); }
-  #big .gh-gauge-chart-main-value {
+  #big .gh-gauge-chart-text-layer {
     fill: red;
     font-size: 2em; }
   #big .gh-gauge-chart-overlay {
@@ -21,5 +21,13 @@
     fill: green;
     stroke: blue;
     transform: translate(-50%, -50%); }
+
+#bottom .gh-gauge-chart {
+  width: 150px;
+  height: 200px; }
+  #bottom .gh-gauge-chart-main-layer {
+    transform: translate(chartSize/2, 75px) scale(0.8); }
+  #bottom .gh-gauge-chart-main-value {
+    transform: translate(0px, 100px); }
 
 /*# sourceMappingURL=example-page.css.map */

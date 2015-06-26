@@ -5,6 +5,7 @@ function GaugeChart(target) {
 	};
 
 	var isRendered = false;
+	var isTransformSupported = false;
 	
 	var _options = {
 		target: target,
@@ -18,6 +19,8 @@ function GaugeChart(target) {
 		animationDuration: 2000
 	};
 
+	
+	
 	/*** Chaining API ---> ***/
 	function createChainingMethodForProperty(propertyName, parseFunction) {
 		if (parseFunction) {
@@ -105,6 +108,7 @@ function GaugeChart(target) {
 	/*** <--- Chaining API ***/
 
 	/*** Helper functions ---> ***/
+
 	function cloneObject(source) {
 		return JSON.parse(JSON.stringify(source));
 	};	
@@ -214,7 +218,7 @@ function GaugeChart(target) {
 		_frameElements.svg
 			.setAttribute('class', 'gh-gauge-chart');
 		target
-			.appendChild(_frameElements.svg);
+			.appendChild(_frameElements.svg);			
 			
 		// Main layer
 		_frameElements.mainLayer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -244,12 +248,28 @@ function GaugeChart(target) {
 			.setAttribute('class', 'gh-gauge-chart-text-layer');			
 		_frameElements.mainLayer
 			.appendChild(_frameElements.textLayer);							
-		_frameElements.$textLayer = d3.select(_frameElements.textLayer);		
+		_frameElements.$textLayer = d3.select(_frameElements.textLayer);
+	};
+	
+	function applyTransforms() {
+		if (!('transform' in _frameElements.svg)) {
+			var mainLayerStyle = getComputedStyle(_frameElements.mainLayer);
+			_frameElements.mainLayer
+				.setAttribute('transform', mainLayerStyle.transform || mainLayerStyle.msTransform);
+			_frameElements.mainLayer
+				.setAttribute('fill', mainLayerStyle.fill);				
+			_frameElements.mainLayer
+				.setAttribute('stroke', mainLayerStyle.stroke);												
+				
+			var textLayerStyle = getComputedStyle(_frameElements.textLayer);
+			_frameElements.textLayer
+				.setAttribute('transform', textLayerStyle.transform || mainLayerStyle.msTransform);				
+		}
 	};
 	
 	function calculateDimensions() {
 		var container = _frameElements.svg;		
-		_calculations.outerSize = Math.max(container.clientWidth, container.clientHeight);
+		_calculations.outerSize = Math.min(container.clientWidth, container.clientHeight);
 		_calculations.outerRadius = _calculations.outerSize / 2;
 		_calculations.seriesToFit = Math.ceil(_calculations.outerRadius / (_options.seriesThickness + _options.seriesSeparation));
 	};
@@ -334,6 +354,7 @@ function GaugeChart(target) {
 			renderFrame(frag);
 			_options.target
 				.appendChild(frag);
+			applyTransforms();
 			calculateDimensions();
 		}
 		update();

@@ -1,10 +1,12 @@
 $chartSize: 150px;
+$bottomChartHeight: 200px;
 $chartSizeBig: 300px;
+$scale: 0.8;
 
 #red .gh-gauge-chart {
 
 	&-main-layer {
-		transform: translate($chartSize / 2, $chartSize / 2) scale(0.8) rotate(45deg); 
+		transform: translate($chartSize / 2, $chartSize / 2) scale($scale) rotate(45deg); 
 	}	
 	&-background {
 		fill: #C2B280; 
@@ -19,12 +21,12 @@ $chartSizeBig: 300px;
 	height: $chartSizeBig;
 	
 	&-main-layer {
-		transform: translate($chartSizeBig / 2, $chartSizeBig / 2) scale(0.8);
+		transform: translate($chartSizeBig / 2, $chartSizeBig / 2) scale($scale);
 	}
 	&-series-layer {
 		transform: rotate(135deg); 
 	}	
-	&-main-value {
+	&-text-layer {
 		fill: red;
 		font-size: 2em; 
 	}			
@@ -35,4 +37,16 @@ $chartSizeBig: 300px;
 		stroke: blue;
 		transform: translate(-50%, -50%);
 	}		
+}
+
+#bottom .gh-gauge-chart {
+	width: $chartSize;
+	height: $bottomChartHeight;
+	
+	&-main-layer {
+		transform: translate(chartSize / 2, $chartSize / 2) scale($scale);
+	}
+	&-main-value {
+		transform: translate(0px, (($bottomChartHeight - 2 * $chartSize) / 2) + $chartSize);
+	}
 }
