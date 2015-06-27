@@ -11,7 +11,11 @@ This is a D3-powered implementation of a gauge chart.
 
 ## Known issues
 
-### IE support
+### Firefox bugs
+
+Firefox SVG transformations and size calculations are way off, breaking the entire display. It's a top-priority work, as it makes chart unusable on FF.
+
+### IE limitations
 
 Proper display depends on styling of `<g>` element, which is poorly supported in IE (tested on 9 and 11). As a workaround, computed msTransform property is copied to attributes on four main layers, but other properties (fill, stroke etc.) are not copied and may not have any effect, depending on browser version.
 
