@@ -3,9 +3,9 @@
   -ms-transform: translate(75px, 75px) scale(0.8) rotate(45deg);
   transform: translate(75px, 75px) scale(0.8) rotate(45deg); }
 #red .gh-gauge-chart-background {
-  fill: #C2B280; }
+  stroke: #C2B280; }
 #red .gh-gauge-chart-series {
-  fill: red; }
+  stroke: red; }
 
 #big .gh-gauge-chart {
   width: 300px;
@@ -14,10 +14,15 @@
     -webkit-transform: translate(150px, 150px) scale(0.8);
     -ms-transform: translate(150px, 150px) scale(0.8);
     transform: translate(150px, 150px) scale(0.8); }
-  #big .gh-gauge-chart-series-layer {
-    -webkit-transform: rotate(135deg);
-    -ms-transform: rotate(135deg);
-    transform: rotate(135deg); }
+  #big .gh-gauge-chart-background {
+    stroke-width: 25px; }
+  #big .gh-gauge-chart-series {
+    stroke-width: 25px; }
+    #big .gh-gauge-chart-series-layer {
+      -webkit-transform: rotate(135deg);
+      -ms-transform: rotate(135deg);
+      transform: rotate(135deg);
+      stroke-width: 25px; }
   #big .gh-gauge-chart-text-layer {
     fill: red;
     font-size: 2em; }

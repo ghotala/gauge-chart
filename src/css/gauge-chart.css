@@ -14,9 +14,11 @@
     stroke: none;
     fill: none; }
   .gh-gauge-chart-background {
-    fill: whitesmoke; }
+    stroke: whitesmoke;
+    stroke-width: 9px; }
   .gh-gauge-chart-series {
-    fill: navy; }
+    stroke: navy;
+    stroke-width: 9px; }
     .gh-gauge-chart-series:hover {
       opacity: 1; }
   .gh-gauge-chart-series-1 {

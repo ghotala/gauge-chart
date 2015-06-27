@@ -100,8 +100,6 @@ function GaugeChart(target) {
 	
 	self.data = createChainingMethodForProperty('data', parseData);
 	self.renderHalfCircle = createChainingMethodForProperty('renderHalfCircle', getBoolOrDefaultParser(false));
-	self.seriesThickness = createChainingMethodForProperty('seriesThickness', getIntOrDefaultParser(9, false, false));
-	self.seriesSeparation = createChainingMethodForProperty('seriesSeparation', getIntOrDefaultParser(1, false, true));	
 	self.animate = createChainingMethodForProperty('animate', getBoolOrDefaultParser(true));	
 	self.animationDelay = createChainingMethodForProperty('animationDelay', getIntOrDefaultParser(0, false, true));	
 	self.animationDuration = createChainingMethodForProperty('animationDuration', getIntOrDefaultParser(2000, false, true));	
@@ -145,14 +143,10 @@ function GaugeChart(target) {
 		return avg;		
 	};	
 	
-	function getSeriesOuterRadius(d, i) {
-		return _calculations.outerRadius - i * (_options.seriesThickness + _options.seriesSeparation);	
+	function getSeriesRadius(d, i) {
+		return _calculations.outerRadius - i * (_calculations.seriesThickness + _calculations.seriesSeparation) - _calculations.seriesThickness / 2;	
 	};
 	
-	function getSeriesInnerRadius(d, i) {
-		return getSeriesOuterRadius(d, i) - _options.seriesThickness;
-	};		
-
 	function getSeriesEndAngle(d) {
 		var angleMultiplier = _options.renderHalfCircle ? 0.5 : 1;
 		return Math.PI * 2 * d.value * angleMultiplier / 100 + _options.startAngle;
@@ -165,8 +159,8 @@ function GaugeChart(target) {
 		return (d3
 			.svg
 			.arc()
-			.innerRadius(getSeriesInnerRadius)
-			.outerRadius(getSeriesOuterRadius)
+			.innerRadius(getSeriesRadius)
+			.outerRadius(getSeriesRadius)
 			.startAngle(_options.startAngle)
 			.endAngle(arcType === 'series' ? getSeriesEndAngle : getBackgroundEndAngle));	
 	};	
@@ -284,11 +278,23 @@ function GaugeChart(target) {
 		}
 	};
 	
+	function calculateArcsSettings() {
+		if (!_calculations.seriesThickness) {
+			var layer = _frameElements.$seriesLayer;
+			var dummySeries = layer
+				.append('path')
+				.attr('class', 'gh-gauge-chart-series');
+			_calculations.seriesThickness = parseFloat(getComputedStyle(dummySeries[0][0]).strokeWidth);
+			_calculations.seriesSeparation = Math.round(_calculations.seriesThickness * 0.2);
+			dummySeries.remove();
+		}
+	};
+	
 	function calculateDimensions() {
 		var container = _frameElements.svg;		
 		_calculations.outerSize = Math.min(container.clientWidth, container.clientHeight);
 		_calculations.outerRadius = _calculations.outerSize / 2;
-		_calculations.seriesToFit = Math.ceil(_calculations.outerRadius / (_options.seriesThickness + _options.seriesSeparation));
+		_calculations.seriesToFit = Math.ceil(_calculations.outerRadius / (_calculations.seriesThickness + _calculations.seriesSeparation));
 	};
 	
 	function renderArcs(arcType, renderFinalValue, renderFinalPosition) {
@@ -317,7 +323,7 @@ function GaugeChart(target) {
 			
 		arcs			
 			.attr('class', function(d, i) { return 'gh-gauge-chart-' + arcType + ' ' + 'gh-gauge-chart-' + arcType + '-' + (i + 1); });
-			
+				
 		if (renderFinalValue && renderFinalPosition) {
 			arcs				
 				.attr('d', arcFunction);		
@@ -372,6 +378,7 @@ function GaugeChart(target) {
 			_options.target
 				.appendChild(frag);
 			applyTransforms();
+			calculateArcsSettings();			
 			calculateDimensions();
 		}
 		update();

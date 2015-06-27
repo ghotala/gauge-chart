@@ -4,6 +4,7 @@ $chartSize: 150px;
 $bottomChartHeight: 200px;
 $chartSizeBig: 300px;
 $scale: 0.8;
+$strokeWidthBig: 25px;
 
 #red .gh-gauge-chart {
 
@@ -11,10 +12,10 @@ $scale: 0.8;
 		@include transform(translate($chartSize / 2, $chartSize / 2) scale($scale) rotate(45deg)); 
 	}	
 	&-background {
-		fill: #C2B280; 
+		stroke: #C2B280; 
 	}
 	&-series {
-		fill: red; 
+		stroke: red; 
 	}
 }
 
@@ -25,9 +26,18 @@ $scale: 0.8;
 	&-main-layer {
 		@include transform(translate($chartSizeBig / 2, $chartSizeBig / 2) scale($scale));
 	}
-	&-series-layer {
-		@include transform(rotate(135deg)); 
+	&-background {
+		stroke-width: $strokeWidthBig;
 	}	
+	
+	&-series {
+		stroke-width: $strokeWidthBig;
+		
+		&-layer {
+				@include transform(rotate(135deg)); 
+				stroke-width: 25px;
+		}			
+	}		
 	&-text-layer {
 		fill: red;
 		font-size: 2em; 

@@ -63,19 +63,10 @@ chart.data() // returns [{id: 1, value: 20, weight: 0.6}, {id: 6, value: 40}, {i
 
 #### `.renderHalfCircle(boolean)`
 Switches between a full-circle (default) and half-circle mode.
+
 ```javascript
 chart
   .renderHalfCircle(true);
-```
-
-#### `.seriesThickness(number)`
-#### `.seriesSeparation(number)`
-Control the thickness of gauges and width of separation between them. Thickness needs to be positive, and separation cannot be negative.
-
-```javascript
-chart
-  .seriesThickness(5)
-  .seriesSeparation(3);
 ```
 
 #### `.animate(boolean)`
@@ -103,8 +94,6 @@ All methods are chainable, so you can set up and display chart all in one go:
 var chartHalf = GaugeChart(document.getElementById('chartContainer'))
   .data([{id: 1, value: 20}, {id: 6, value: 40}, {id: 22, value: 60}])
   .renderHalfCircle(true)
-  .seriesThickness(15)
-  .seriesSeparation(5)  
   .animate(true)
   .animationDelay(1000)
   .animationDuration(2500)

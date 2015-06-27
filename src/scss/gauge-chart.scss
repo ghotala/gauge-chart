@@ -1,5 +1,6 @@
 @import 'mixins';
 
+$strokeWidth: 9px;
 $seriesOpacities: 0.75 0.55 0.35 0.15;
 $chartSize: 150px;
 
@@ -20,11 +21,13 @@ $chartSize: 150px;
 	}		
 	
 	&-background {
-		fill: whitesmoke; 
+		stroke: whitesmoke; 
+		stroke-width: $strokeWidth;
 	}	
 	
 	&-series {
-		fill: navy; 				
+		stroke: navy; 				
+		stroke-width: $strokeWidth;
 		
 		&:hover {
 			opacity: 1;

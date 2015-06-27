@@ -59,14 +59,13 @@
 			
 		var chartBig = GaugeChart(document.getElementById('big'))
 			.data(data)
+
 			.animate(true);
 		chartBig.render();
 		
 		var chartBigThick = GaugeChart(document.getElementById('big'))
 			.data(data)
 			.renderHalfCircle(true)
-			.seriesThickness(25)
-			.seriesSeparation(10)
 			.animate(true);
 		chartBigThick.render();
 		
@@ -74,7 +73,7 @@
 			.data(data)
 			.animate(true);
 		chartBottomText.render();		
-		
+		/*
 		setInterval(function() {
 			var data = generateData([2,4], [10, 90], [1,5]);
 			chartFull.data(data);
@@ -94,6 +93,7 @@
 			chartBottomText.data(data);
 			chartBottomText.render();
 		}, 2500);
+		*/
 		</script>
     </body>
 </html>
