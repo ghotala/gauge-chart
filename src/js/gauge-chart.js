@@ -174,36 +174,49 @@ function GaugeChart(target) {
 	function arcTween(arcType, direction) {		
 		return function(transition) {		
 			transition.attrTween('d', function(d, i) {
+				var oldValue = parseFloat(this.getAttribute('data-current-value')),
+					oldIndex = parseFloat(this.getAttribute('data-current-index'));
 				if (direction === 'in') {
-					var interpolateValue = d3.interpolate(this.getAttribute('data-current-value'), d.value);				
-					var interpolateIndex = d3.interpolate(this.getAttribute('data-current-index'), i);				
+					var interpolateValue = d3.interpolate(oldValue, d.value);				
+					var interpolateIndex = d3.interpolate(oldIndex, i);				
 				}
 				else {
-					var interpolateValue = d3.interpolate(this.getAttribute('data-current-value'), 0);				
-					var interpolateIndex = d3.interpolate(this.getAttribute('data-current-index'), _calculations.seriesToFit);					
+					var interpolateValue = d3.interpolate(oldValue, 0);				
+					var interpolateIndex = d3.interpolate(oldIndex, _calculations.seriesToFit);					
 				}
 				var arc = getArcFunction(arcType);
 				var that = this;
+				var cachedArc;
 				return function(t) {
-					var newValue = interpolateValue(t);
-					var newIndex = interpolateIndex(t);
+					var newValue = interpolateValue(t).toFixed(1);
+					var newIndex = interpolateIndex(t).toFixed(2);
 					var dataClone = cloneObject(d);
 					dataClone.value = newValue;
-					that.setAttribute('data-current-value', newValue);
-					that.setAttribute('data-current-index', newIndex);
-					return arc(dataClone, newIndex);
+					if (oldValue !== newValue) {
+						that.setAttribute('data-current-value', newValue);
+					}
+					if (oldIndex !== newIndex) {
+						that.setAttribute('data-current-index', newIndex);
+					}
+					if (!cachedArc || oldValue !== newValue || oldIndex !== newIndex) {
+						cachedArc = arc(dataClone, newIndex);
+					}
+					return cachedArc;
 				};
 			});
 		};
 	};		
 	
 	function valueTextTween(transition) {
-		var interpolate = d3.interpolate(this.getAttribute('data-current-value'), getWeightedAvg(_options.data));
-		var that = this;
+		var oldValue = parseFloat(this.getAttribute('data-current-value')),
+			interpolate = d3.interpolate(oldValue, getWeightedAvg(_options.data)),
+			that = this;
 		return function(t) {
-			var newValue = interpolate(t);
-			that.setAttribute('data-current-value', newValue);
-			d3.select(this).text(newValue.toFixed(1) + '%');
+			var newValue = interpolate(t).toFixed(1);
+			if (oldValue !== newValue) {
+				that.setAttribute('data-current-value', newValue);
+				d3.select(this).text(newValue + '%');
+			}
 		}	
 	};	
 	/*** <--- Helper functions ***/
