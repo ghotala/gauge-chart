@@ -1,0 +1,19 @@
+{
+  "options": {
+    "shorthandCompacting": false,
+    "roundingPrecision": -1
+  },
+  "target": {
+    "files": {
+      "dist/css/gauge-chart.min.css": [
+		"src/public/css/gauge-chart.css"
+      ],
+      "demo/gauge-chart.min.css": [
+		"src/public/css/gauge-chart.css"
+      ],
+      "demo/example-page.min.css": [
+		"src/public/css/example-page.css"
+      ]	  	  	  
+    }
+  }
+}

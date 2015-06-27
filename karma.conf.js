@@ -15,10 +15,10 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-		'src/public/css/*.css',
+		'src/**/*.css',
 		'node_modules/d3/d3.js',
-		'src/public/js/*.js',
-		'src/tests/js/*-spec.js'
+		'src/**/*.js',
+		'tests/js/*-spec.js'
     ],
 
 

@@ -1,0 +1,6 @@
+{
+  "dist": {
+	"src": ["dist"],
+	"force": "true"
+  }
+}
