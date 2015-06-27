@@ -1,3 +1,5 @@
+@import 'mixins';
+
 $chartSize: 150px;
 $bottomChartHeight: 200px;
 $chartSizeBig: 300px;
@@ -6,7 +8,7 @@ $scale: 0.8;
 #red .gh-gauge-chart {
 
 	&-main-layer {
-		transform: translate($chartSize / 2, $chartSize / 2) scale($scale) rotate(45deg); 
+		@include transform(translate($chartSize / 2, $chartSize / 2) scale($scale) rotate(45deg)); 
 	}	
 	&-background {
 		fill: #C2B280; 
@@ -21,10 +23,10 @@ $scale: 0.8;
 	height: $chartSizeBig;
 	
 	&-main-layer {
-		transform: translate($chartSizeBig / 2, $chartSizeBig / 2) scale($scale);
+		@include transform(translate($chartSizeBig / 2, $chartSizeBig / 2) scale($scale));
 	}
 	&-series-layer {
-		transform: rotate(135deg); 
+		@include transform(rotate(135deg)); 
 	}	
 	&-text-layer {
 		fill: red;
@@ -37,9 +39,9 @@ $scale: 0.8;
 	height: $bottomChartHeight;
 	
 	&-main-layer {
-		transform: translate(chartSize / 2, $chartSize / 2) scale($scale);
+		@include transform(translate($chartSize / 2, $chartSize / 2) scale($scale));
 	}
 	&-text-layer {
-		transform: translate(0px, (($bottomChartHeight - 2 * $chartSize) / 2) + $chartSize);
+		@include transform(translate(0px, (($bottomChartHeight - 2 * $chartSize) / 2) + $chartSize));
 	}
 }

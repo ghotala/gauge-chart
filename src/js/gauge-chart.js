@@ -254,16 +254,20 @@ function GaugeChart(target) {
 	function applyTransforms() {
 		if (!('transform' in _frameElements.svg)) {
 			var mainLayerStyle = getComputedStyle(_frameElements.mainLayer);
-			/*_frameElements.mainLayer
-				.setAttribute('transform', mainLayerStyle.transform || mainLayerStyle.msTransform);
 			_frameElements.mainLayer
-				.setAttribute('fill', mainLayerStyle.fill);				
-			_frameElements.mainLayer
-				.setAttribute('stroke', mainLayerStyle.stroke);	*/
+				.setAttribute('transform', mainLayerStyle.msTransform);
+			
+			var mainLayerOverlayStyle = getComputedStyle(_frameElements.mainLayerOverlay);
+			_frameElements.mainLayerOverlay
+				.setAttribute('transform', mainLayerOverlayStyle.msTransform);				
 				
-			/*var textLayerStyle = getComputedStyle(_frameElements.textLayer);
+			var seriesLayerStyle = getComputedStyle(_frameElements.seriesLayer);
+			_frameElements.seriesLayer
+				.setAttribute('transform', seriesLayerStyle.msTransform);								
+
+			var textLayerStyle = getComputedStyle(_frameElements.textLayer);
 			_frameElements.textLayer
-				.setAttribute('transform', textLayerStyle.transform || mainLayerStyle.msTransform);	*/
+				.setAttribute('transform', textLayerStyle.msTransform);
 		}
 	};
 	

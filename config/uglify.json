@@ -1,7 +1,7 @@
 {
 	"all": {
 		"files": {
-			"dist/js/gauge-chart.min.js": [
+			"dist/gauge-chart.min.js": [
 				"src/js/gauge-chart.js"
 			],
 			"demo/gauge-chart.min.js": [

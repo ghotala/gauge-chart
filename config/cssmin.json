@@ -5,7 +5,7 @@
   },
   "target": {
     "files": {
-      "dist/css/gauge-chart.min.css": [
+      "dist/gauge-chart.min.css": [
 		"src/css/gauge-chart.css"
       ],
       "demo/gauge-chart.min.css": [

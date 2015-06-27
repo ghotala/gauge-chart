@@ -13,16 +13,18 @@ This is a D3-powered implementation of a gauge chart.
 
 ### IE support
 
-Proper display depends on css transitions on `<g>` element, which is not supported in IE<=11. Workaround will arrive in the next release, but the subset of options controlled via css may be limited
+Proper display depends on styling of `<g>` element, which is poorly supported in IE (tested on 9 and 11). As a workaround, computed msTransform property is copied to attributes on four main layers, but other properties (fill, stroke etc.) are not copied and may not have any effect, depending on browser version.
 
 ## Install
 
 To install, clone the source `git clone git://github.com/ghotala/gauge-chart.git` and do one of the following:
 
-* get `chart-gauge.min.js` and `chart-gauge.min.css` from `dist` folder **Not available yet**
+* get `chart-gauge.min.js` and `chart-gauge.min.css` from `dist` folder
 * build it yourself with `npm install` and `grunt`
 
 ## Examples
+
+Below are the basic use cases. See `demo` folder for more examples.
 
 ### Chart creation
 
