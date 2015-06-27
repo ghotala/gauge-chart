@@ -1,8 +1,8 @@
 {
 	"src": {
 		"files": {
-			"src/public/css/gauge-chart.css" : "src/public/scss/gauge-chart.scss",
-			"src/public/css/example-page.css" : "src/public/scss/example-page.scss"					
+			"src/css/gauge-chart.css" : "src/scss/gauge-chart.scss",
+			"src/css/example-page.css" : "src/scss/example-page.scss"					
 		}
 	}
 }

@@ -2,10 +2,10 @@
 	"all": {
 		"files": {
 			"dist/js/gauge-chart.min.js": [
-				"src/public/js/gauge-chart.js"
+				"src/js/gauge-chart.js"
 			],
 			"demo/gauge-chart.min.js": [
-				"src/public/js/gauge-chart.js"
+				"src/js/gauge-chart.js"
 			]			
 		}
 	}
