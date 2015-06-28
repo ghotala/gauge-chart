@@ -14,7 +14,7 @@ This is a D3-powered implementation of a gauge chart.
 
 Proper display depends on styling of `<g>` element, which is poorly supported in IE (tested on 9 and 11). As a workaround, computed msTransform property is copied to attributes on four main layers, but other properties (fill, stroke etc.) are not copied and may not have any effect, depending on browser version.
 
-Animations can cause severe performance issues on IE 9. It's being worked on, but there's only so much that can be done. Consider turning them off if this occurs.
+Looped animations can cause performance issues, especially on IE 9. It's being worked on, but there's only so much that can be done. Consider turning them off if this occurs.
 
 ## Install
 
