@@ -160,16 +160,20 @@ function GaugeChart(target) {
 		return _options.arcThickness / getArcScale(i);
 	};
 	
+	function getArcLength(d) {
+		return Math.ceil(_calculations.arcLength *  d.value / (100 * (_options.renderHalfCircle ? 2 : 1)));
+	}
+	
 	function getArcDashArray(d) {	
-		var strokeLength = Math.ceil(_calculations.arcLength *  d.value / 100);
-		return strokeLength + ' ' + Math.ceil(_calculations.arcLength - strokeLength);
+		var arcLength = getArcLength(d);
+		return arcLength + ' ' + Math.ceil(_calculations.arcLength - arcLength);
 	};
 	
-	function arcTween(arcType, direction) {		
+	function arcTween(direction) {		
 		return function(transition) {		
 			transition
 				.attrTween('transform', function(d, i) {
-					var oldScale = parseFloat(this.getAttribute('data-current-scale'));
+					var oldScale = parseFloat(this.getAttribute('transform').replace(/scale\(/g, ''));
 					if (direction === 'in') {
 						var interpolateScale = d3.interpolate(oldScale, getArcScale(i));				
 					}
@@ -179,46 +183,35 @@ function GaugeChart(target) {
 					var that = this;
 					return function(t) {
 						var newScale = interpolateScale(t).toFixed(3);
-						if (oldScale !== newScale) {
-							that.setAttribute('data-current-scale', newScale);
-						}
 						return 'scale(' + newScale + ')';
 					};
-				})
+				})				
 				.attrTween('stroke-width', function(d, i) {
-					var oldPosition = parseFloat(this.getAttribute('data-current-position'));
+					var oldStrokeWidth = parseFloat(this.getAttribute('stroke-width'));
 					if (direction === 'in') {
-						var interpolatePosition = d3.interpolate(oldPosition, i);
+						var interpolateStrokeWidth = d3.interpolate(oldStrokeWidth, getArcThickness(i));
 					}
 					else {
-						var interpolatePosition = d3.interpolate(oldPosition, oldPosition);
+						var interpolateStrokeWidth = d3.interpolate(oldStrokeWidth, oldStrokeWidth);
 					}
 					var that = this;
 					return function(t) {
-						var newPosition = interpolatePosition(t).toFixed(3);
-						if (oldPosition !== newPosition) {
-							that.setAttribute('data-current-position', newPosition);
-						}
-						return getArcThickness(newPosition).toFixed(3) + 'px';
+						var newStrokeWidth = interpolateStrokeWidth(t).toFixed(0);
+						return newStrokeWidth + 'px';
 					};
 				})
 				.attrTween('stroke-dasharray', function(d, i) {
-					var oldValue = parseFloat(this.getAttribute('data-current-value'));
+					var oldValue = parseFloat(this.getAttribute('stroke-dasharray'));
 					if (direction === 'in') {
-						var interpolateValue = d3.interpolate(oldValue, d.value);				
+						var interpolateValue = d3.interpolate(oldValue, getArcLength(d));				
 					}
 					else {
 						var interpolateValue = d3.interpolate(oldValue, 0);				
 					}
 					var that = this;
 					return function(t) {
-						var newValue = interpolateValue(t).toFixed(3);
-						var dataClone = cloneObject(d);
-						dataClone.value = newValue;
-						if (oldValue !== newValue) {
-							that.setAttribute('data-current-value', newValue);
-						}
-						return getArcDashArray(dataClone);
+						var newValue = interpolateValue(t).toFixed(0);
+						return newValue + ' ' + Math.ceil(_calculations.arcLength - newValue);
 					};
 				});
 		};
@@ -316,7 +309,7 @@ function GaugeChart(target) {
 			.data(data, function(d) { return d.id; });
 
 		if (_options.animate) {
-			animateArcs(arcs.exit(), arcTween(arcType, 'out'), true);		
+			animateArcs(arcs.exit(), arcTween('out'), true);
 		}
 		else {
 			arcs
@@ -328,9 +321,6 @@ function GaugeChart(target) {
 			.enter()
 			.append('circle')
 			.attr('r', _options.radius)
-			.attr('data-current-value', function(d) { return renderFinalValue ? d.value : 0; })
-			.attr('data-current-scale', function(d, i) { return renderFinalPosition ? getArcScale(i) : 0; })	
-			.attr('data-current-position', function(d, i) { return i; })	
 			.attr('stroke-width', function(d, i) { return getArcThickness(i); })
 			.attr('stroke-dasharray', function(d, i) { return renderFinalValue ? getArcDashArray(d) : ('0 ' + Math.ceil(_calculations.arcLength)); })
 			.attr('transform',function(d, i) { return 'scale(' + (renderFinalPosition ? getArcScale(i) : 0) + ')'; });			
@@ -363,7 +353,8 @@ function GaugeChart(target) {
 		var transition = $arcs
 			.transition()
 				.duration(_options.animationDuration)
-				.delay(_options.animationDelay);
+				.delay(_options.animationDelay)
+
 		if (remove) {
 			transition
 				.remove();
@@ -399,8 +390,8 @@ function GaugeChart(target) {
 			_dataElements.$background = renderArcs('background', true, false);		
 			_dataElements.$series = renderArcs('series', false, false);
 			_dataElements.$text = renderText(isRendered ? parseFloat(_dataElements.$text.attr('data-current-value')) : 0);			
-			animateArcs(_dataElements.$background, arcTween('background', 'in'), false);
-			animateArcs(_dataElements.$series, arcTween('series', 'in'), false);
+			animateArcs(_dataElements.$background, arcTween('in'), false);
+			animateArcs(_dataElements.$series, arcTween('in'), false);
 			animateText(_dataElements.$text, valueTextTween);			
 		}
 		else {

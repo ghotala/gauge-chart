@@ -6,20 +6,15 @@ This is a D3-powered implementation of a gauge chart.
 
 * works with **multiple series** - every value will get a separate micro-gauge, radiating around the weighted average of all values displayed in the center
 * renders a **half-circle** or **full-circle** chart
-* **css-styled** - you can redecorate or rearrange elements with pure css. Prefer a different color set? Override the existing one with custom style. Want a different starting angle? Control it with a css transformation
 * **animated** - you can turn animations on to get better visibility of changes when datasource gets updated
 
 ## Known issues
-
-### Firefox bugs
-
-Firefox SVG transformations and size calculations are way off, breaking the entire display. It's a top-priority work, as it makes chart unusable on FF.
 
 ### IE limitations
 
 Proper display depends on styling of `<g>` element, which is poorly supported in IE (tested on 9 and 11). As a workaround, computed msTransform property is copied to attributes on four main layers, but other properties (fill, stroke etc.) are not copied and may not have any effect, depending on browser version.
 
-Animations can cause severe performance issues on IE 9. It's being worked on, but there's only so much that can be done.
+Animations can cause severe performance issues on IE 9. It's being worked on, but there's only so much that can be done. Consider turning them off if this occurs.
 
 ## Install
 
@@ -63,10 +58,21 @@ chart.data() // returns [{id: 1, value: 20, weight: 0.6}, {id: 6, value: 40}, {i
 
 #### `.renderHalfCircle(boolean)`
 Switches between a full-circle (default) and half-circle mode.
-
 ```javascript
 chart
   .renderHalfCircle(true);
+```
+
+#### `.radius(number)`
+#### `.arcThickness(number)`
+#### `.arcSeparation(number)`
+Control radius of the outer-most gauge, thickness of gauges and width of separation between them. Thickness and radius need to be positive, and separation cannot be negative.
+
+```javascript
+chart
+  .radius(100)
+  .arcThickness(5)
+  .arcSeparation(3);
 ```
 
 #### `.animate(boolean)`
@@ -94,6 +100,9 @@ All methods are chainable, so you can set up and display chart all in one go:
 var chartHalf = GaugeChart(document.getElementById('chartContainer'))
   .data([{id: 1, value: 20}, {id: 6, value: 40}, {id: 22, value: 60}])
   .renderHalfCircle(true)
+  .radius(125)
+  .arcThickness(15)
+  .arcSeparation(5)  
   .animate(true)
   .animationDelay(1000)
   .animationDuration(2500)

@@ -17,8 +17,7 @@
   #big .gh-gauge-chart-series-layer {
     -webkit-transform: rotate(135deg);
     -ms-transform: rotate(135deg);
-    transform: rotate(135deg);
-    stroke-width: 25px; }
+    transform: rotate(135deg); }
   #big .gh-gauge-chart-text-layer {
     fill: red;
     font-size: 2em; }

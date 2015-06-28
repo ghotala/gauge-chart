@@ -29,7 +29,6 @@ $scale: 0.8;
 	&-series {	
 		&-layer {
 				@include transform(rotate(135deg)); 
-				stroke-width: 25px;
 		}			
 	}		
 	&-text-layer {
