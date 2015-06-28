@@ -59,21 +59,24 @@
 			
 		var chartBig = GaugeChart(document.getElementById('big'))
 			.data(data)
-
+			.radius(150)
 			.animate(true);
 		chartBig.render();
-		
+
 		var chartBigThick = GaugeChart(document.getElementById('big'))
 			.data(data)
 			.renderHalfCircle(true)
+			.radius(150)
+			.arcThickness(20)
+			.arcSeparation(20)
 			.animate(true);
 		chartBigThick.render();
-		
+
 		var chartBottomText = GaugeChart(document.getElementById('bottom'))
 			.data(data)
 			.animate(true);
 		chartBottomText.render();		
-		/*
+
 		setInterval(function() {
 			var data = generateData([2,4], [10, 90], [1,5]);
 			chartFull.data(data);
@@ -93,7 +96,6 @@
 			chartBottomText.data(data);
 			chartBottomText.render();
 		}, 2500);
-		*/
 		</script>
     </body>
 </html>

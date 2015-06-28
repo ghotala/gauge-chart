@@ -11,8 +11,9 @@ function GaugeChart(target) {
 		target: target,
 		data: [],		
 		renderHalfCircle: false,
-		seriesThickness: 9,
-		seriesSeparation: 1,
+		radius: 75,
+		arcThickness: 9,
+		arcSeparation: 1,
 		startAngle: -Math.PI / 2,
 		animate: false,
 		animationDelay: 0,
@@ -100,6 +101,9 @@ function GaugeChart(target) {
 	
 	self.data = createChainingMethodForProperty('data', parseData);
 	self.renderHalfCircle = createChainingMethodForProperty('renderHalfCircle', getBoolOrDefaultParser(false));
+	self.radius = createChainingMethodForProperty('radius', getIntOrDefaultParser(75, false, false));
+	self.arcThickness = createChainingMethodForProperty('arcThickness', getIntOrDefaultParser(9, false, false));
+	self.arcSeparation = createChainingMethodForProperty('arcSeparation', getIntOrDefaultParser(1, false, true));	
 	self.animate = createChainingMethodForProperty('animate', getBoolOrDefaultParser(true));	
 	self.animationDelay = createChainingMethodForProperty('animationDelay', getIntOrDefaultParser(0, false, true));	
 	self.animationDuration = createChainingMethodForProperty('animationDuration', getIntOrDefaultParser(2000, false, true));	
@@ -143,61 +147,80 @@ function GaugeChart(target) {
 		return avg;		
 	};	
 	
-	function getSeriesRadius(d, i) {
-		return _calculations.outerRadius - i * (_calculations.seriesThickness + _calculations.seriesSeparation) - _calculations.seriesThickness / 2;	
+	function getArcRadius(d, i) {
+		return _options.radius - _options.arcThickness / 2;	
 	};
 	
-	function getSeriesEndAngle(d) {
-		var angleMultiplier = _options.renderHalfCircle ? 0.5 : 1;
-		return Math.PI * 2 * d.value * angleMultiplier / 100 + _options.startAngle;
-	};
-	function getBackgroundEndAngle() {
-		return getSeriesEndAngle({value: 100});
+	function getArcScale(i) {	
+		var singleArcPercentage = (_options.arcThickness + _options.arcSeparation) / _options.radius;
+		return 1 - i * singleArcPercentage;;
 	};
 	
-	function getArcFunction(arcType) {
-		return (d3
-			.svg
-			.arc()
-			.innerRadius(getSeriesRadius)
-			.outerRadius(getSeriesRadius)
-			.startAngle(_options.startAngle)
-			.endAngle(arcType === 'series' ? getSeriesEndAngle : getBackgroundEndAngle));	
-	};	
+	function getArcThickness(i) {
+		return Math.round(_options.arcThickness / getArcScale(i));
+	};
+	
+	function getArcDashArray(d) {	
+		var strokeLength = Math.ceil(_calculations.arcLength *  d.value / 100);
+		return strokeLength + ' ' + Math.ceil(_calculations.arcLength - strokeLength);
+	};
 	
 	function arcTween(arcType, direction) {		
 		return function(transition) {		
-			transition.attrTween('d', function(d, i) {
-				var oldValue = parseFloat(this.getAttribute('data-current-value')),
-					oldIndex = parseFloat(this.getAttribute('data-current-index'));
-				if (direction === 'in') {
-					var interpolateValue = d3.interpolate(oldValue, d.value);				
-					var interpolateIndex = d3.interpolate(oldIndex, i);				
-				}
-				else {
-					var interpolateValue = d3.interpolate(oldValue, 0);				
-					var interpolateIndex = d3.interpolate(oldIndex, _calculations.seriesToFit);					
-				}
-				var arc = getArcFunction(arcType);
-				var that = this;
-				var cachedArc;
-				return function(t) {
-					var newValue = interpolateValue(t).toFixed(1);
-					var newIndex = interpolateIndex(t).toFixed(2);
-					var dataClone = cloneObject(d);
-					dataClone.value = newValue;
-					if (oldValue !== newValue) {
-						that.setAttribute('data-current-value', newValue);
+			transition
+				.attrTween('transform', function(d, i) {
+					var oldScale = parseFloat(this.getAttribute('data-current-scale'));
+					if (direction === 'in') {
+						var interpolateScale = d3.interpolate(oldScale, getArcScale(i));				
 					}
-					if (oldIndex !== newIndex) {
-						that.setAttribute('data-current-index', newIndex);
+					else {
+						var interpolateScale = d3.interpolate(oldScale, 0);					
 					}
-					if (!cachedArc || oldValue !== newValue || oldIndex !== newIndex) {
-						cachedArc = arc(dataClone, newIndex);
+					var that = this;
+					return function(t) {
+						var newScale = interpolateScale(t).toFixed(3);
+						if (oldScale !== newScale) {
+							that.setAttribute('data-current-scale', newScale);
+						}
+						return 'scale(' + newScale + ')';
+					};
+				})
+				.attrTween('stroke-width', function(d, i) {
+					var oldPosition = parseFloat(this.getAttribute('data-current-position'));
+					if (direction === 'in') {
+						var interpolatePosition = d3.interpolate(oldPosition, i);
 					}
-					return cachedArc;
-				};
-			});
+					else {
+						var interpolatePosition = d3.interpolate(oldPosition, oldPosition);
+					}
+					var that = this;
+					return function(t) {
+						var newPosition = interpolatePosition(t).toFixed(3);
+						if (oldPosition !== newPosition) {
+							that.setAttribute('data-current-position', newPosition);
+						}
+						return getArcThickness(newPosition) + 'px';
+					};
+				})
+				.attrTween('stroke-dasharray', function(d, i) {
+					var oldValue = parseFloat(this.getAttribute('data-current-value'));
+					if (direction === 'in') {
+						var interpolateValue = d3.interpolate(oldValue, d.value);				
+					}
+					else {
+						var interpolateValue = d3.interpolate(oldValue, 0);				
+					}
+					var that = this;
+					return function(t) {
+						var newValue = interpolateValue(t).toFixed(1);
+						var dataClone = cloneObject(d);
+						dataClone.value = newValue;
+						if (oldValue !== newValue) {
+							that.setAttribute('data-current-value', newValue);
+						}
+						return getArcDashArray(dataClone);
+					};
+				});				
 		};
 	};		
 	
@@ -278,32 +301,18 @@ function GaugeChart(target) {
 		}
 	};
 	
-	function calculateArcsSettings() {
-		if (!_calculations.seriesThickness) {
-			var layer = _frameElements.$seriesLayer;
-			var dummySeries = layer
-				.append('path')
-				.attr('class', 'gh-gauge-chart-series');
-			_calculations.seriesThickness = parseFloat(getComputedStyle(dummySeries[0][0]).strokeWidth);
-			_calculations.seriesSeparation = Math.round(_calculations.seriesThickness * 0.2);
-			dummySeries.remove();
+	function calculateArcLength() {
+		if (!_calculations.arcLength) {
+			_calculations.arcLength = 2 * Math.PI * _options.radius;
 		}
 	};
 	
-	function calculateDimensions() {
-		var container = _frameElements.svg;		
-		_calculations.outerSize = Math.min(container.clientWidth, container.clientHeight);
-		_calculations.outerRadius = _calculations.outerSize / 2;
-		_calculations.seriesToFit = Math.ceil(_calculations.outerRadius / (_calculations.seriesThickness + _calculations.seriesSeparation));
-	};
-	
 	function renderArcs(arcType, renderFinalValue, renderFinalPosition) {
-		var data = _options.data
+		var data = arcType === 'series' ? _options.data : _options.data.map(function(datum) { return { id: datum.id, value: 100 }; });
 		var layer = _frameElements.$seriesLayer;
-		var arcFunction = getArcFunction(arcType);
 			
 		var arcs = layer
-			.selectAll('path.gh-gauge-chart-' + arcType)
+			.selectAll('circle.gh-gauge-chart-' + arcType)
 			.data(data, function(d) { return d.id; });
 
 		if (_options.animate) {
@@ -317,17 +326,17 @@ function GaugeChart(target) {
 			
 		arcs
 			.enter()
-			.append('path')
-			.attr('data-current-value', function(d) { return renderFinalValue ? d.value : 0; })	
-			.attr('data-current-index', function(d, i) { return renderFinalPosition ? i : _calculations.seriesToFit; });			
+			.append('circle')
+			.attr('r', _options.radius)
+			.attr('data-current-value', function(d) { return renderFinalValue ? d.value : 0; })
+			.attr('data-current-scale', function(d, i) { return renderFinalPosition ? getArcScale(i) : 0; })	
+			.attr('data-current-position', function(d, i) { return i; })	
+			.attr('stroke-width', function(d, i) { return getArcThickness(i); })
+			.attr('stroke-dasharray', function(d, i) { return renderFinalValue ? getArcDashArray(d) : ('0 ' + Math.ceil(_calculations.arcLength)); })
+			.attr('transform',function(d, i) { return 'scale(' + (renderFinalPosition ? getArcScale(i) : 0) + ')'; });			
 			
 		arcs			
 			.attr('class', function(d, i) { return 'gh-gauge-chart-' + arcType + ' ' + 'gh-gauge-chart-' + arcType + '-' + (i + 1); });
-				
-		if (renderFinalValue && renderFinalPosition) {
-			arcs				
-				.attr('d', arcFunction);		
-		}
 		
 		return arcs;
 	};
@@ -378,8 +387,7 @@ function GaugeChart(target) {
 			_options.target
 				.appendChild(frag);
 			applyTransforms();
-			calculateArcsSettings();			
-			calculateDimensions();
+			calculateArcLength();			
 		}
 		update();
 		isRendered = true;

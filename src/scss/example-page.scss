@@ -4,7 +4,6 @@ $chartSize: 150px;
 $bottomChartHeight: 200px;
 $chartSizeBig: 300px;
 $scale: 0.8;
-$strokeWidthBig: 25px;
 
 #red .gh-gauge-chart {
 
@@ -26,13 +25,8 @@ $strokeWidthBig: 25px;
 	&-main-layer {
 		@include transform(translate($chartSizeBig / 2, $chartSizeBig / 2) scale($scale));
 	}
-	&-background {
-		stroke-width: $strokeWidthBig;
-	}	
 	
-	&-series {
-		stroke-width: $strokeWidthBig;
-		
+	&-series {	
 		&-layer {
 				@include transform(rotate(135deg)); 
 				stroke-width: 25px;
