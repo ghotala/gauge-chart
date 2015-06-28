@@ -153,11 +153,11 @@ function GaugeChart(target) {
 	
 	function getArcScale(i) {	
 		var singleArcPercentage = (_options.arcThickness + _options.arcSeparation) / _options.radius;
-		return 1 - i * singleArcPercentage;;
+		return (1 - i * singleArcPercentage);
 	};
 	
 	function getArcThickness(i) {
-		return Math.round(_options.arcThickness / getArcScale(i));
+		return _options.arcThickness / getArcScale(i);
 	};
 	
 	function getArcDashArray(d) {	
@@ -199,7 +199,7 @@ function GaugeChart(target) {
 						if (oldPosition !== newPosition) {
 							that.setAttribute('data-current-position', newPosition);
 						}
-						return getArcThickness(newPosition) + 'px';
+						return getArcThickness(newPosition).toFixed(3) + 'px';
 					};
 				})
 				.attrTween('stroke-dasharray', function(d, i) {
@@ -212,7 +212,7 @@ function GaugeChart(target) {
 					}
 					var that = this;
 					return function(t) {
-						var newValue = interpolateValue(t).toFixed(1);
+						var newValue = interpolateValue(t).toFixed(3);
 						var dataClone = cloneObject(d);
 						dataClone.value = newValue;
 						if (oldValue !== newValue) {
@@ -220,7 +220,7 @@ function GaugeChart(target) {
 						}
 						return getArcDashArray(dataClone);
 					};
-				});				
+				});
 		};
 	};		
 	
